@@ -8,7 +8,10 @@ func main() {
 	// Routes
 	r.GET("/", HomeHandler)
 	r.GET("/note/:name", NoteViewHandler)
-	// Add more routes here later
+	r.GET("/new", NewNoteFormHandler)
+	r.POST("/new", NewNoteSubmitHandler)
+	r.GET("/edit/:name", EditNoteFormHandler)
+	r.POST("/edit/:name", EditNoteSubmitHandler)
 
 	r.Run(":8080")
 }
