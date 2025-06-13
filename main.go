@@ -1,15 +1,14 @@
 package main
 
-import (
-	"github.com/gin-gonic/gin"
-)
+import "github.com/gin-gonic/gin"
 
 func main() {
 	r := gin.Default()
 
-	r.GET("/", func(c *gin.Context) {
-		c.String(200, "Hello, mdnote!")
-	})
+	// Routes
+	r.GET("/", HomeHandler)
+	r.GET("/note/:name", NoteViewHandler)
+	// Add more routes here later
 
-	r.Run(":8080") // default port
+	r.Run(":8080")
 }
