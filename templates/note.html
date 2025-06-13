@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head><title>{{ .Title }}</title></head>
+<body>
+  <a href="/">Home</a> | <a href="/edit/{{ .Title }}">Edit</a> | 
+  <form action="/delete/{{ .Title }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this note?');">
+    <button type="submit">Delete</button>
+  </form>
+  <hr>
+  {{ .Content }}
+  <p><em>Last edited: {{ .LastEdited }}</em></p>
+</body>
+</html>

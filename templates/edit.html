@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head><title>Edit Note: {{ .Title }}</title></head>
+<body>
+  <a href="/">Home</a> | <a href="/note/{{ .Title }}">View Note</a>
+  <h1>Edit Note: {{ .Title }}</h1>
+  <form action="/edit/{{ .Title }}" method="POST">
+    <textarea name="content" rows="20" cols="80">{{ .Content }}</textarea><br><br>
+    <input type="submit" value="Save" />
+  </form>
+</body>
+</html>

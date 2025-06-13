@@ -1,6 +1,16 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"html/template"
+
+	"github.com/gin-gonic/gin"
+)
+
+var templates *template.Template
+
+func init() {
+	templates = template.Must(template.ParseGlob("templates/*.html"))
+}
 
 func main() {
 	r := gin.Default()
@@ -12,6 +22,7 @@ func main() {
 	r.POST("/new", NewNoteSubmitHandler)
 	r.GET("/edit/:name", EditNoteFormHandler)
 	r.POST("/edit/:name", EditNoteSubmitHandler)
+	r.POST("/delete/:name", DeleteNoteHandler)
 
 	r.Run(":8080")
 }

@@ -2,7 +2,9 @@ package main
 
 import (
 	"os"
+	"os/exec"
 	"strings"
+	"time"
 )
 
 func sanitizeFileName(name string) string {
@@ -32,4 +34,22 @@ func ListNotes() ([]string, error) {
 		}
 	}
 	return notes, nil
+}
+
+func getGitLastEditedTime(filePath string) (string, error) {
+	cmd := exec.Command("git", "log", "-1", "--format=%ci", "--", filePath)
+	output, err := cmd.Output()
+	if err != nil {
+		return "", err
+	}
+	dateStr := strings.TrimSpace(string(output))
+	if dateStr == "" {
+		return "untracked", nil
+	}
+	// Parse date string from git output (e.g. "2025-06-13 20:00:00 -0400")
+	t, err := time.Parse("2006-01-02 15:04:05 -0700", dateStr)
+	if err != nil {
+		return dateStr, nil // fallback to raw string
+	}
+	return t.Format("Jan 2, 2006 15:04 MST"), nil
 }

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head><title>mdnote - Home</title></head>
+<body>
+  <h1>mdnote</h1>
+  {{ if .Notes }}
+  <ul>
+    {{ range .Notes }}
+      <li><a href="/note/{{ . }}">{{ . }}</a></li>
+    {{ end }}
+  </ul>
+  {{ else }}
+  <p>No notes yet.</p>
+  {{ end }}
+  <a href="/new">Create New Note</a>
+</body>
+</html>

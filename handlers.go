@@ -1,7 +1,7 @@
 package main
 
 import (
-	"io/ioutil"
+	"html/template"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -17,14 +17,16 @@ func HomeHandler(c *gin.Context) {
 		return
 	}
 
-	html := "<h1>mdnote</h1><ul>"
-	for _, note := range notes {
-		html += `<li><a href="/note/` + note + `">` + note + `</a></li>`
+	data := struct {
+		Notes []string
+	}{
+		Notes: notes,
 	}
-	html += "</ul><a href=\"/new\">Create New Note</a>"
 
 	c.Header("Content-Type", "text/html")
-	c.String(http.StatusOK, html)
+	if err := templates.ExecuteTemplate(c.Writer, "home.html", data); err != nil {
+		c.String(http.StatusInternalServerError, "Template rendering error: %v", err)
+	}
 }
 
 func NoteViewHandler(c *gin.Context) {
@@ -42,30 +44,32 @@ func NoteViewHandler(c *gin.Context) {
 	}
 
 	htmlContent := blackfriday.Run(content)
-	page := `
-    <html><head><title>` + name + `</title></head><body>
-    <a href="/">Home</a> | <a href="/edit/` + name + `">Edit</a><hr>`
-	page += string(htmlContent)
-	page += `</body></html>`
+	lastEdited, err := getGitLastEditedTime(path)
+	if err != nil {
+		lastEdited = "unknown"
+	}
+
+	data := struct {
+		Title      string
+		Content    template.HTML
+		LastEdited string
+	}{
+		Title:      name,
+		Content:    template.HTML(htmlContent),
+		LastEdited: lastEdited,
+	}
 
 	c.Header("Content-Type", "text/html")
-	c.String(http.StatusOK, page)
+	if err := templates.ExecuteTemplate(c.Writer, "note.html", data); err != nil {
+		c.String(http.StatusInternalServerError, "Template rendering error: %v", err)
+	}
 }
 
 func NewNoteFormHandler(c *gin.Context) {
-	form := `
-    <html><head><title>New Note</title></head><body>
-    <a href="/">Home</a>
-    <h1>Create New Note</h1>
-    <form action="/new" method="POST">
-      Title:<br><input name="title" /><br><br>
-      Content:<br><textarea name="content" rows="20" cols="80"></textarea><br><br>
-      <input type="submit" value="Save" />
-    </form>
-    </body></html>
-    `
 	c.Header("Content-Type", "text/html")
-	c.String(200, form)
+	if err := templates.ExecuteTemplate(c.Writer, "new.html", nil); err != nil {
+		c.String(http.StatusInternalServerError, "Template rendering error: %v", err)
+	}
 }
 
 func NewNoteSubmitHandler(c *gin.Context) {
@@ -73,57 +77,57 @@ func NewNoteSubmitHandler(c *gin.Context) {
 	content := c.PostForm("content")
 
 	if title == "" {
-		c.String(400, "Invalid title")
+		c.String(http.StatusBadRequest, "Invalid title")
 		return
 	}
 
 	path := filepath.Join("notes", title+".md")
 	if _, err := os.Stat(path); err == nil {
-		c.String(400, "Note already exists")
+		c.String(http.StatusBadRequest, "Note already exists")
 		return
 	}
 
 	err := os.WriteFile(path, []byte(content), 0644)
 	if err != nil {
-		c.String(500, "Error saving note")
+		c.String(http.StatusInternalServerError, "Error saving note")
 		return
 	}
 
-	c.Redirect(302, "/note/"+title)
+	c.Redirect(http.StatusFound, "/note/"+title)
 }
 
 func EditNoteFormHandler(c *gin.Context) {
 	name := sanitizeFileName(c.Param("name"))
 	if name == "" {
-		c.String(400, "Invalid note name")
+		c.String(http.StatusBadRequest, "Invalid note name")
 		return
 	}
 
 	path := filepath.Join("notes", name+".md")
-	content, err := ioutil.ReadFile(path)
+	content, err := os.ReadFile(path)
 	if err != nil {
-		c.String(404, "Note not found")
+		c.String(http.StatusNotFound, "Note not found")
 		return
 	}
 
-	form := `
-    <html><head><title>Edit Note</title></head><body>
-    <a href="/">Home</a> | <a href="/note/` + name + `">View Note</a>
-    <h1>Edit Note: ` + name + `</h1>
-    <form action="/edit/` + name + `" method="POST">
-      <textarea name="content" rows="20" cols="80">` + string(content) + `</textarea><br><br>
-      <input type="submit" value="Save" />
-    </form>
-    </body></html>
-    `
+	data := struct {
+		Title   string
+		Content string
+	}{
+		Title:   name,
+		Content: string(content),
+	}
+
 	c.Header("Content-Type", "text/html")
-	c.String(200, form)
+	if err := templates.ExecuteTemplate(c.Writer, "edit.html", data); err != nil {
+		c.String(http.StatusInternalServerError, "Template rendering error: %v", err)
+	}
 }
 
 func EditNoteSubmitHandler(c *gin.Context) {
 	name := sanitizeFileName(c.Param("name"))
 	if name == "" {
-		c.String(400, "Invalid note name")
+		c.String(http.StatusBadRequest, "Invalid note name")
 		return
 	}
 
@@ -132,9 +136,26 @@ func EditNoteSubmitHandler(c *gin.Context) {
 
 	err := os.WriteFile(path, []byte(content), 0644)
 	if err != nil {
-		c.String(500, "Error saving note")
+		c.String(http.StatusInternalServerError, "Error saving note")
 		return
 	}
 
-	c.Redirect(302, "/note/"+name)
+	c.Redirect(http.StatusFound, "/note/"+name)
+}
+
+func DeleteNoteHandler(c *gin.Context) {
+	name := sanitizeFileName(c.Param("name"))
+	if name == "" {
+		c.String(http.StatusBadRequest, "Invalid note name")
+		return
+	}
+
+	path := filepath.Join("notes", name+".md")
+	err := os.Remove(path)
+	if err != nil {
+		c.String(http.StatusInternalServerError, "Error deleting note")
+		return
+	}
+
+	c.Redirect(http.StatusFound, "/")
 }
