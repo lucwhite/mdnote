@@ -119,4 +119,4 @@ This allows you to see **“Last edited”** info on the note page.
 
 ## 📄 License
 
-MIT © 2025 [Your Name]
+MIT © 2025 Lucas White
