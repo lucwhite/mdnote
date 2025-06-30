@@ -92,6 +92,11 @@ func NewNoteSubmitHandler(c *gin.Context) {
 		c.String(http.StatusInternalServerError, "Error saving note")
 		return
 	}
+	err = gitAddAndCommit(path, "Add note: "+title)
+	if err != nil {
+		c.String(http.StatusBadRequest, "Git failed to update.")
+		return
+	}
 
 	c.Redirect(http.StatusFound, "/note/"+title)
 }
@@ -137,6 +142,12 @@ func EditNoteSubmitHandler(c *gin.Context) {
 	err := os.WriteFile(path, []byte(content), 0644)
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Error saving note")
+		return
+	}
+
+	err = gitAddAndCommit(path, "Update note: "+name)
+	if err != nil {
+		c.String(http.StatusBadRequest, "Git failed to update.")
 		return
 	}
 

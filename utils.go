@@ -53,3 +53,12 @@ func getGitLastEditedTime(filePath string) (string, error) {
 	}
 	return t.Format("Jan 2, 2006 15:04 MST"), nil
 }
+
+func gitAddAndCommit(filePath, message string) error {
+	addCmd := exec.Command("git", "add", filePath)
+	if err := addCmd.Run(); err != nil {
+		return err
+	}
+	commitCmd := exec.Command("git", "commit", "-m", message)
+	return commitCmd.Run()
+}
