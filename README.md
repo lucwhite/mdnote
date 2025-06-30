@@ -2,8 +2,6 @@
 
 **mdnote** is a simple, lightweight, Markdown-based note-taking web app built with Go, Gin, and Postgres (optionally). It uses plaintext `.md` files stored in a local `notes/` directory and supports Git-backed versioning to track edits over time.
 
----
-
 ## 🚀 Features
 
 - Create, view, edit, and delete Markdown notes
@@ -12,8 +10,6 @@
 - HTML templating with `html/template`
 - Minimal dependencies and easy to deploy
 
----
-
 ## 🧱 Tech Stack
 
 - [Go](https://golang.org/)
@@ -21,8 +17,6 @@
 - [blackfriday](https://github.com/russross/blackfriday) (Markdown parser)
 - `html/template` for server-side rendering
 - Optional: Git for version history
-
----
 
 ## 📁 Project Structure
 
@@ -41,8 +35,6 @@ mdnote/
 ├── go.sum
 └── README.md
 ```
-
----
 
 ## ⚙️ Setup Instructions
 
@@ -83,8 +75,6 @@ go run .
 
 The app will be served at [http://localhost:8080](http://localhost:8080)
 
----
-
 ## ✍️ Usage
 
 - **Home Page (`/`)**  
@@ -102,8 +92,6 @@ The app will be served at [http://localhost:8080](http://localhost:8080)
 - **Delete a Note (`/delete/:name`)**  
   Remove a note permanently. Requires confirmation.
 
----
-
 ## 🕒 Git-based Versioning (Optional)
 
 To track the last edit time using Git:
@@ -116,15 +104,11 @@ To track the last edit time using Git:
 
 This allows you to see **“Last edited”** info on the note page.
 
----
-
 ## 🧪 Development Notes
 
 - Templating is handled via `html/template` and parsed at startup.
 - Markdown is rendered with [blackfriday](https://github.com/russross/blackfriday).
 - Notes are stored in the file system — no database is required for the core app.
-
----
 
 ## 📦 Future Enhancements
 
@@ -132,8 +116,6 @@ This allows you to see **“Last edited”** info on the note page.
 - Git-backed diff viewer (view previous versions)
 - Search or tag-based organization
 - Database-backed storage (e.g., Postgres) as an alternative
-
----
 
 ## 📄 License
 
