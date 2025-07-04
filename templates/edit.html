@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
-<head><title>Edit Note: {{ .Title }}</title></head>
+<head>
+  <title>Edit Note: {{ .Title }}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/light.min.css">
+</head>
 <body>
   <a href="/">Home</a> | <a href="/note/{{ .Title }}">View Note</a>
   <h1>Edit Note: {{ .Title }}</h1>

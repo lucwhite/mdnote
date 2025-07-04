@@ -3,6 +3,8 @@ package main
 import (
 	"html/template"
 
+	"os"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,6 +15,15 @@ func init() {
 }
 
 func main() {
+	if len(os.Args) > 1 {
+		runCLI(os.Args[1:])
+		return
+	}
+
+	runWebServer()
+}
+
+func runWebServer() {
 	r := gin.Default()
 
 	// Routes

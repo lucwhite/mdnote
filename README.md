@@ -1,122 +1,78 @@
-# 📝 mdnote
+# 📘 mdnote
 
-**mdnote** is a simple, lightweight, Markdown-based note-taking web app built with Go, Gin, and Postgres (optionally). It uses plaintext `.md` files stored in a local `notes/` directory and supports Git-backed versioning to track edits over time.
+`mdnote` is a simple Markdown-based note-taking app built with Go, Gin, and Markdown rendering. It supports a web UI and a CLI for creating, editing, and viewing notes stored as `.md` files.
+
+---
 
 ## 🚀 Features
 
-- Create, view, edit, and delete Markdown notes
-- Notes are stored as `.md` files in a `notes/` directory
-- Git integration to track changes and show last-edited timestamps
-- HTML templating with `html/template`
-- Minimal dependencies and easy to deploy
+- Create, edit, delete, and view notes in your browser
+- Notes are saved as `.md` files in a `notes/` directory
+- Markdown is rendered using `blackfriday`
+- Git-backed history (optional)
+- Templated HTML with minimal styling via [Water.css](https://watercss.kognise.dev/)
+- CLI support for working with notes directly from the terminal
 
-## 🧱 Tech Stack
+---
 
-- [Go](https://golang.org/)
-- [Gin Web Framework](https://github.com/gin-gonic/gin)
-- [blackfriday](https://github.com/russross/blackfriday) (Markdown parser)
-- `html/template` for server-side rendering
-- Optional: Git for version history
+## 📦 Getting Started
 
-## 📁 Project Structure
-
-```
-mdnote/
-├── main.go                # Application entry point
-├── handlers.go            # Route handlers
-├── utils.go               # Utility functions (e.g. git time, sanitization)
-├── templates/             # HTML templates
-│   ├── home.html
-│   ├── note.html
-│   ├── new.html
-│   └── edit.html
-├── notes/                 # Markdown notes directory
-├── go.mod
-├── go.sum
-└── README.md
-```
-
-## ⚙️ Setup Instructions
-
-### 1. Clone the repository
+### 1. Clone and build the app
 
 ```bash
-git clone https://github.com/yourusername/mdnote.git
+git clone https://github.com/your-username/mdnote.git
 cd mdnote
+go build -o mdnote .
 ```
 
-### 2. Install dependencies
+### 2. Run the web server
 
 ```bash
-go mod tidy
+./mdnote serve
 ```
+Visit http://localhost:8080 to view the app.
 
-### 3. Create the notes directory
+## 🧑‍💻 CLI Usage
+
+You can also interact with mdnote via the command line.
+
+### 🔧 Available Commands
 
 ```bash
-mkdir notes
+mdnote new <title> [--editor editor]     # Create a new note (opens in editor)
+mdnote edit <title> [--editor editor]    # Edit an existing note (alias: open)
+mdnote open <title>                      # Alias for edit
+mdnote view <title>                      # Print note content to stdout
+mdnote delete <title>                    # Delete a note
+mdnote list                              # List all note titles
+mdnote serve                             # Start the web server
 ```
 
-### 4. (Optional) Initialize Git for versioning
+> Default editor is subl (Sublime Text). You can override with --editor code, --editor nano, etc., or set the EDITOR environment variable.
+
+## Example Usage
 
 ```bash
-git init
-git add notes
-git commit -m "Initial commit of notes folder"
+mdnote new "dev-notes" --editor subl
+mdnote edit "dev-notes"
+mdnote view "dev-notes"
+mdnote list
+mdnote serve
 ```
 
-> **Important**: The app expects to find a `notes/` folder at the root level for all Markdown files.
-
-### 5. Run the app
+To build the CLI:
 
 ```bash
-go run .
+go build -o mdnote .
+./mdnote list
 ```
 
-The app will be served at [http://localhost:8080](http://localhost:8080)
+To install it globally:
+```bash
+sudo mv mdnote /usr/local/bin/
+```
 
-## ✍️ Usage
-
-- **Home Page (`/`)**  
-  Lists all notes with links to view each one.
-
-- **View a Note (`/note/:name`)**  
-  Renders Markdown as HTML. Shows last-edited time via Git if enabled.
-
-- **Create a Note (`/new`)**  
-  Fill out a form to add a new note.
-
-- **Edit a Note (`/edit/:name`)**  
-  Modify the Markdown content of an existing note.
-
-- **Delete a Note (`/delete/:name`)**  
-  Remove a note permanently. Requires confirmation.
-
-## 🕒 Git-based Versioning (Optional)
-
-To track the last edit time using Git:
-
-1. Ensure your app is inside a Git repo (with `notes/` tracked).
-2. The app uses `git log` to fetch the last commit timestamp for each `.md` file.
-3. When editing/saving notes, the app can automatically:
-    - `git add notes/note.md`
-    - `git commit -m "Update note <title>"`
-
-This allows you to see **“Last edited”** info on the note page.
-
-## 🧪 Development Notes
-
-- Templating is handled via `html/template` and parsed at startup.
-- Markdown is rendered with [blackfriday](https://github.com/russross/blackfriday).
-- Notes are stored in the file system — no database is required for the core app.
-
-## 📦 Future Enhancements
-
-- CLI for creating/editing notes from the terminal
-- Git-backed diff viewer (view previous versions)
-- Search or tag-based organization
-- Database-backed storage (e.g., Postgres) as an alternative
+Now you can run mdnote from anywhere in your terminal!
 
 ## 📄 License
-
-MIT © 2025 Lucas White
+MIT

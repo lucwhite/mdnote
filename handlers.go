@@ -43,7 +43,9 @@ func NoteViewHandler(c *gin.Context) {
 		return
 	}
 
-	htmlContent := blackfriday.Run(content)
+	htmlContent := blackfriday.Run(content, blackfriday.WithExtensions(
+		blackfriday.CommonExtensions|blackfriday.HardLineBreak|blackfriday.FencedCode,
+	))
 	lastEdited, err := getGitLastEditedTime(path)
 	if err != nil {
 		lastEdited = "unknown"
@@ -132,26 +134,37 @@ func EditNoteFormHandler(c *gin.Context) {
 func EditNoteSubmitHandler(c *gin.Context) {
 	name := sanitizeFileName(c.Param("name"))
 	if name == "" {
-		c.String(http.StatusBadRequest, "Invalid note name")
+		c.String(400, "Invalid note name")
 		return
 	}
 
-	content := c.PostForm("content")
+	newContent := c.PostForm("content")
 	path := filepath.Join("notes", name+".md")
 
-	err := os.WriteFile(path, []byte(content), 0644)
+	// Read existing content
+	existingContent, err := os.ReadFile(path)
 	if err != nil {
-		c.String(http.StatusInternalServerError, "Error saving note")
+		c.String(404, "Note not found")
 		return
 	}
 
-	err = gitAddAndCommit(path, "Update note: "+name)
-	if err != nil {
-		c.String(http.StatusBadRequest, "Git failed to update.")
+	// If unchanged, just redirect without writing or committing
+	if string(existingContent) == newContent {
+		c.Redirect(302, "/note/"+name)
 		return
 	}
 
-	c.Redirect(http.StatusFound, "/note/"+name)
+	// Write updated content
+	err = os.WriteFile(path, []byte(newContent), 0644)
+	if err != nil {
+		c.String(500, "Error saving note")
+		return
+	}
+
+	// Optional: commit only if desired
+	_ = gitAddAndCommit(path, "Edit note: "+name)
+
+	c.Redirect(302, "/note/"+name)
 }
 
 func DeleteNoteHandler(c *gin.Context) {
