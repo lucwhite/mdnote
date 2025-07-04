@@ -10,6 +10,6 @@ Testing 123
 
 ```go
 func main(){
-
+  a := myfunc();
 }
 ```
