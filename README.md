@@ -68,12 +68,15 @@ go build -o mdnote .
 ./mdnote list
 ```
 
+<!--
+NOTE: This doesn't currently work.
 To install it globally:
 ```bash
 sudo mv mdnote /usr/local/bin/
 ```
 
 Now you can run mdnote from anywhere in your terminal!
+-->
 
 ## 📄 License
 
