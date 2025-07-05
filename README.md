@@ -8,7 +8,7 @@
 
 - Create, edit, delete, and view notes in your browser
 - Notes are saved as `.md` files in a `notes/` directory
-- Markdown is rendered using `blackfriday`
+- Markdown is rendered using [Goldmark](https://github.com/yuin/goldmark)
 - Git-backed history (optional)
 - Templated HTML with minimal styling via [Water.css](https://watercss.kognise.dev/)
 - CLI support for working with notes directly from the terminal
