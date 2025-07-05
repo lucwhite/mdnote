@@ -8,9 +8,9 @@ jekfnsjkf nkjfns kknie nglksnrken .gjklesn.
 
 Testing 123
 
-```
+```go
 func main(){
-a := myfunc();
+  a := myfunc();
 }
 ```
 test
