@@ -124,3 +124,11 @@ func renderMarkdown(input []byte) []byte {
 	}
 	return buf.Bytes()
 }
+
+func resolveNotePath(name string) string {
+	name = sanitizeFileName(name)
+	if !strings.HasSuffix(name, ".md") {
+		name += ".md"
+	}
+	return filepath.Join("notes", name)
+}

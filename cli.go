@@ -117,7 +117,7 @@ func listNotesCLI() {
 
 func updateGit(noteName string) {
 	// Ensure we’re pointing to the actual notes directory
-	notePath := filepath.Join("notes", sanitizeFileName(noteName)+".md")
+	notePath := resolveNotePath(noteName)
 	err := gitAddAndCommit(notePath, "Update note: "+noteName)
 	if err != nil {
 		fmt.Println("Git update failed:", err)
