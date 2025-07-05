@@ -16,7 +16,7 @@
 ### 1. Clone and build the app
 
 ```bash
-git clone https://github.com/your-username/mdnote.git
+git clone https://github.com/lucwhite/mdnote.git
 cd mdnote
 go build -o mdnote .
 ```
