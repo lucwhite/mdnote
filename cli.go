@@ -53,6 +53,8 @@ func runCLI(args []string) {
 		listNotesCLI()
 	case "serve":
 		runWebServer()
+	case "update":
+		updateGit(args[1])
 	default:
 		fmt.Println("Unknown command:", command)
 	}
@@ -110,5 +112,14 @@ func listNotesCLI() {
 	notes, _ := ListNotes()
 	for _, note := range notes {
 		fmt.Println("-", note)
+	}
+}
+
+func updateGit(noteName string) {
+	// Ensure we’re pointing to the actual notes directory
+	notePath := filepath.Join("notes", sanitizeFileName(noteName)+".md")
+	err := gitAddAndCommit(notePath, "Update note: "+noteName)
+	if err != nil {
+		fmt.Println("Git update failed:", err)
 	}
 }

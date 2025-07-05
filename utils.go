@@ -2,8 +2,10 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -57,13 +59,62 @@ func getGitLastEditedTime(filePath string) (string, error) {
 	return t.Format("Jan 2, 2006 15:04 MST"), nil
 }
 
-func gitAddAndCommit(filePath, message string) error {
-	addCmd := exec.Command("git", "add", filePath)
-	if err := addCmd.Run(); err != nil {
+func gitAddAndCommit(notePath string, message string) error {
+	// Get the absolute file path
+	absPath, err := filepath.Abs(notePath)
+	if err != nil {
+		return fmt.Errorf("could not resolve absolute path: %w", err)
+	}
+
+	// Get the directory containing the file
+	dir := filepath.Dir(absPath)
+
+	// Find the git root (we assume the repo is at or above the notes folder)
+	gitRoot := findGitRoot(dir)
+	if gitRoot == "" {
+		return fmt.Errorf("not inside a git repository")
+	}
+
+	// Run git commands from the root
+	relPath, _ := filepath.Rel(gitRoot, absPath)
+
+	addCmd := exec.Command("git", "add", relPath)
+	addCmd.Dir = gitRoot
+	if output, err := addCmd.CombinedOutput(); err != nil {
+		fmt.Println("git add failed:", string(output))
 		return err
 	}
+
 	commitCmd := exec.Command("git", "commit", "-m", message)
-	return commitCmd.Run()
+	commitCmd.Dir = gitRoot
+	if output, err := commitCmd.CombinedOutput(); err != nil {
+		// It's okay if there's nothing to commit
+		if string(output) == "" || !isNoChangesError(string(output)) {
+			fmt.Println("git commit failed:", string(output))
+			return err
+		}
+	}
+
+	return nil
+}
+
+func isNoChangesError(output string) bool {
+	return output == "nothing to commit, working tree clean\n" ||
+		output == "On branch main\nnothing to commit, working tree clean\n"
+}
+
+func findGitRoot(startDir string) string {
+	dir := startDir
+	for {
+		if _, err := os.Stat(filepath.Join(dir, ".git")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			return ""
+		}
+		dir = parent
+	}
 }
 
 func renderMarkdown(input []byte) []byte {
