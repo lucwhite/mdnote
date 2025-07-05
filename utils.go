@@ -18,7 +18,7 @@ func sanitizeFileName(name string) string {
 		if (ch >= 'a' && ch <= 'z') ||
 			(ch >= 'A' && ch <= 'Z') ||
 			(ch >= '0' && ch <= '9') ||
-			ch == '-' || ch == '_' {
+			ch == '-' || ch == '_' || ch == '.' {
 			filtered += string(ch)
 		}
 	}

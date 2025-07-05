@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 )
 
@@ -61,7 +60,7 @@ func runCLI(args []string) {
 }
 
 func createOrEditNote(name string, editing bool, editor string) {
-	path := filepath.Join("notes", sanitizeFileName(name)+".md")
+	path := resolveNotePath(name)
 
 	if _, err := os.Stat(path); os.IsNotExist(err) && editing {
 		fmt.Println("Note not found.")
@@ -83,12 +82,12 @@ func createOrEditNote(name string, editing bool, editor string) {
 		fmt.Printf("Failed to open editor (%s): %v\n", editor, err)
 		return
 	}
-
-	_ = gitAddAndCommit(path, "Update note via CLI: "+name)
+	// Changes are not yet made, so we cannot commit here.
+	//_ = gitAddAndCommit(path, "Update note via CLI: "+name)
 }
 
 func viewNote(name string) {
-	path := filepath.Join("notes", sanitizeFileName(name)+".md")
+	path := resolveNotePath(name)
 	content, err := os.ReadFile(path)
 	if err != nil {
 		fmt.Println("Note not found.")
@@ -98,7 +97,7 @@ func viewNote(name string) {
 }
 
 func deleteNoteCLI(name string) {
-	path := filepath.Join("notes", sanitizeFileName(name)+".md")
+	path := resolveNotePath(name)
 	err := os.Remove(path)
 	if err != nil {
 		fmt.Println("Error deleting note:", err)
