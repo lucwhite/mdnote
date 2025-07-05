@@ -2,8 +2,6 @@
 
 `mdnote` is a simple Markdown-based note-taking app built with Go, Gin, and Markdown rendering. It supports a web UI and a CLI for creating, editing, and viewing notes stored as `.md` files.
 
----
-
 ## 🚀 Features
 
 - Create, edit, delete, and view notes in your browser
@@ -12,8 +10,6 @@
 - Git-backed history (optional)
 - Templated HTML with minimal styling via [Water.css](https://watercss.kognise.dev/)
 - CLI support for working with notes directly from the terminal
-
----
 
 ## 📦 Getting Started
 
@@ -80,4 +76,9 @@ sudo mv mdnote /usr/local/bin/
 Now you can run mdnote from anywhere in your terminal!
 
 ## 📄 License
+
 MIT
+
+## Author
+
+Lucas White
