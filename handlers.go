@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
-	"github.com/russross/blackfriday/v2"
 )
 
 func HomeHandler(c *gin.Context) {
@@ -43,9 +42,8 @@ func NoteViewHandler(c *gin.Context) {
 		return
 	}
 
-	htmlContent := blackfriday.Run(content, blackfriday.WithExtensions(
-		blackfriday.CommonExtensions|blackfriday.HardLineBreak|blackfriday.FencedCode,
-	))
+	htmlContent := renderMarkdown(content)
+
 	lastEdited, err := getGitLastEditedTime(path)
 	if err != nil {
 		lastEdited = "unknown"

@@ -1,10 +1,13 @@
 package main
 
 import (
+	"bytes"
 	"os"
 	"os/exec"
 	"strings"
 	"time"
+
+	"github.com/yuin/goldmark"
 )
 
 func sanitizeFileName(name string) string {
@@ -61,4 +64,12 @@ func gitAddAndCommit(filePath, message string) error {
 	}
 	commitCmd := exec.Command("git", "commit", "-m", message)
 	return commitCmd.Run()
+}
+
+func renderMarkdown(input []byte) []byte {
+	var buf bytes.Buffer
+	if err := goldmark.Convert(input, &buf); err != nil {
+		return []byte("Markdown render error")
+	}
+	return buf.Bytes()
 }
