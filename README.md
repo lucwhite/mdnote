@@ -45,10 +45,14 @@ mdnote open <title>                      # Alias for edit
 mdnote view <title>                      # Print note content to stdout
 mdnote delete <title>                    # Delete a note
 mdnote list                              # List all note titles
+mdnote update <title>                    # Commit changes to a note to git
 mdnote serve                             # Start the web server
 ```
 
 > Default editor is subl (Sublime Text). You can override with --editor code, --editor nano, etc., or set the EDITOR environment variable.
+
+**Note:**  
+You can pass note titles with or without the `.md` extension (e.g., `mdnote view mynote` or `mdnote view mynote.md` both work).
 
 ## Example Usage
 
@@ -56,6 +60,7 @@ mdnote serve                             # Start the web server
 mdnote new "dev-notes" --editor subl
 mdnote edit "dev-notes"
 mdnote view "dev-notes"
+mdnote update "dev-notes"
 mdnote list
 mdnote serve
 ```
